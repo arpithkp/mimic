@@ -388,6 +388,20 @@ class MaasAPITests(SynchronousTestCase):
         data = self.get_responsebody(resp)
         self.assertEquals(True, 'Agent does not exist' in json.dumps(data))
 
+    def test_agentinstallers(self):
+        """
+        fetch agent installer
+        """
+        req = request(self, self.root, "POST", self.uri + '/agent_installers', '')
+        resp = self.successResultOf(req)
+        self.assertEquals(resp.code, 201)
+        xsil = None
+        for h in resp.headers.getAllRawHeaders():
+            if h[0].lower() == 'x-shell-installer-location':
+                xsil = h[1][0]
+                break
+        self.assertTrue('monitoring.api' in xsil)
+
     def test_metriclist(self):
         """
         get available metrics
