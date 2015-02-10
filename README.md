@@ -14,8 +14,12 @@ Mimic helps with:
 
 The fastest way to install and start Mimic is:
 
+Clone repo [visit Mimic](https://github.com/rackerlabs/mimic) 
+
+    cd mimic
     pip install mimic
     twistd -n mimic
+
 
 You can test the server started successfully by sending this request and checking for the
 welcome message:
@@ -31,6 +35,12 @@ You can use the command below to test authentication and see your service catalo
 In order to use Mimic with most other projects you just need to override the Authentication Endpoint. In many projects, including the [OpenStack Client CLI](https://wiki.openstack.org/wiki/OpenStackClient) or the [OpenStack Keystone client](https://github.com/openstack/python-keystoneclient/) you can do that by setting the `OS_AUTH_URL` environment variable or the `--os-auth-url` option. For example:
 
     keystone --os-username mimic --os-password 1235 --os-auth-url http://localhost:8900/identity/v2.0/ catalog
+
+## Tutorials
+###Videos
+- [Openstack Summit - 15](https://www.youtube.com/watch?feature=player_embedded&v=HKUUQme3dwA)
+###Blogs
+- [Rackspace mimic](http://www.rackspace.com/blog/mimic-mocks-not-driven-by-tests/)
 
 ### Come join us develop Mimic! Talk to us at ##mimic on irc.freenode.net ###
 
