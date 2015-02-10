@@ -36,9 +36,9 @@ In order to use Mimic with most other projects you just need to override the Aut
 
     keystone --os-username mimic --os-password 1235 --os-auth-url http://localhost:8900/identity/v2.0/ catalog
 
-## Tutorials
 ###Videos
 - [Openstack Summit - 15](https://www.youtube.com/watch?feature=player_embedded&v=HKUUQme3dwA)
+
 ###Blogs
 - [Rackspace mimic](http://www.rackspace.com/blog/mimic-mocks-not-driven-by-tests/)
 
