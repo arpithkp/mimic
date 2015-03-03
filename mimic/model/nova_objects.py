@@ -6,8 +6,11 @@ from characteristic import attributes, Attribute
 from random import randrange
 from json import loads, dumps
 
-from mimic.util.helper import seconds_to_timestamp
-from mimic.util.helper import invalid_resource
+from mimic.util.helper import (
+    seconds_to_timestamp,
+    invalid_resource,
+    random_string,
+)
 
 from twisted.web.http import ACCEPTED, NOT_FOUND
 
@@ -161,8 +164,7 @@ class Server(object):
             disk_config="AUTO",
             # ^ TODO: https://github.com/rackerlabs/mimic/issues/163
             status="ACTIVE",
-            admin_password="testpassword",
-            # ^ TODO: https://github.com/rackerlabs/mimic/issues/164
+            admin_password=random_string(12),
         )
         collection.servers.append(self)
         return self
@@ -287,7 +289,9 @@ def metadata_to_creation_behavior(metadata):
 
 
 @attributes(["tenant_id", "region_name", "clock",
-             Attribute("servers", default_factory=list)])
+             Attribute("servers", default_factory=list),
+             Attribute("creation_behaviors_and_criteria",
+                       default_factory=list)])
 class RegionalServerCollection(object):
     """
     A collection of servers, in a given region, for a given tenant.
@@ -301,6 +305,13 @@ class RegionalServerCollection(object):
             if server.server_id == server_id:
                 return server
 
+    def register_creation_behavior_for_criteria(self, behavior, criteria):
+        """
+        Register the given behavior for server creation based on the given
+        criteria.
+        """
+        self.creation_behaviors_and_criteria.append((behavior, criteria))
+
     def registered_creation_behavior(self, creation_http_request,
                                      creation_json):
         """
@@ -308,6 +319,14 @@ class RegionalServerCollection(object):
         request to inject an error in advance, based on whether it matches the
         parameters in the given creation JSON and HTTP request properties.
         """
+        creation_attributes = {
+            "tenant_id": self.tenant_id,
+            "server_name": creation_json["server"]["name"],
+            "metadata": creation_json["server"].get("metadata")
+        }
+        for behavior, criteria in self.creation_behaviors_and_criteria:
+            if criteria.evaluate(creation_attributes):
+                return behavior
         return None
 
     def request_creation(self, creation_http_request, creation_json,
